@@ -6,7 +6,7 @@ command 'Expand Abbreviation' do |cmd|
   #cmd.scope = :all
   cmd.key_binding = 'M1+E'
   cmd.invoke do |context|
-    ipath = com.aptana.core.util.ExecutableUtil.find("python", true, [org.eclipse.core.runtime.Path.fromOSString("C:/Python27")])
+    ipath = com.aptana.core.util.ExecutableUtil.find("python", true, [org.eclipse.core.runtime.Path.fromOSString("C:/Python27"), org.eclipse.core.runtime.Path.fromOSString("C:/Python26")])
     python_exe = ipath.nil? ? 'python' : ipath.toOSString
     result = IO.popen("#{python_exe} \"#{ENV['TM_BUNDLE_SUPPORT']}/expand_abbreviation.py\"", "r+") do |io|
       io.write $stdin.read
