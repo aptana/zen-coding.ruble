@@ -13,6 +13,7 @@ command 'Expand Abbreviation' do |cmd|
       io.close_write # let the process know you've given it all the data 
       io.read
     end
+    context.exit_discard if (result.nil? or result.strip.length == 0)
     result
   end
 end
