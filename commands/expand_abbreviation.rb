@@ -14,8 +14,12 @@ command 'Expand Abbreviation' do |cmd|
         io.close_write # let the process know you've given it all the data 
         io.read
       end
-      context.exit_discard if (result.nil? or result.strip.length == 0)
-      result
+      if Ruble.is_windows? && $?.exitstatus == 1
+        context.exit_show_tooltip "Unable to find 'python' executable. Please be sure it is installed and on the PATH"
+      else
+        context.exit_discard if (result.nil? or result.strip.length == 0)
+        result
+      end
     rescue Errno::EPIPE
       context.exit_show_tooltip "Unable to find 'python' executable. Please be sure it is installed and on the PATH"
     rescue => e
