@@ -4,7 +4,8 @@ command 'Expand Abbreviation' do |cmd|
   cmd.input = :selection, :line
   cmd.output = :insert_as_snippet
   #cmd.scope = :all
-  cmd.key_binding = 'M1+E'
+  cmd.key_binding = 'M1+M3+E'
+  cmd.key_binding.mac = "M1+E"
   cmd.invoke do |context|
     begin
       ipath = com.aptana.core.util.ExecutableUtil.find("python", true, [org.eclipse.core.runtime.Path.fromOSString("C:/Python27"), org.eclipse.core.runtime.Path.fromOSString("C:/Python26")])
