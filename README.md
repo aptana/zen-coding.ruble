@@ -4,13 +4,13 @@ A bundle to enable related commands in Aptana Studio. Ported from http://github.
 
 ## Authors
 
-* Textmate Contributors
+* TextMate Contributors
 * Modifications by Aptana
 
 ## License
 
 This bundle is licensed under the MIT license.
 
-## Other Stuff
+## Bugs/Requests
 
 * You can [report a bug or request a feature here](http://github.com/aptana/zen-coding.ruble/issues)
