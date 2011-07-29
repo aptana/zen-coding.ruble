@@ -14,21 +14,6 @@ children:
   displayName: Zen Coding
   path: bundle.rb
   scope: null
-- !!com.aptana.scripting.model.CommandElement
-  async: false
-  customProperties: null
-  displayName: Expand Abbreviation
-  input: [selection, line]
-  inputPath: null
-  keyBindingMap:
-    !!com.aptana.scripting.model.Platform 'ALL': [M1+M3+E]
-    !!com.aptana.scripting.model.Platform 'MAC': [M1+E]
-  outputPath: null
-  outputType: insert_as_snippet
-  path: commands/expand_abbreviation.rb
-  runType: current_thread
-  scope: null
-  workingDirectoryType: UNDEFINED
 copyright: null
 customProperties: null
 decreaseIndentMarkers: &id001 {}
