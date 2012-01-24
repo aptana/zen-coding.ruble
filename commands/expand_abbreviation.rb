@@ -1,6 +1,6 @@
 require 'ruble'
 
-command 'Expand Abbreviation' do |cmd|
+command t(:expand_abbreviation) do |cmd|
   cmd.input = :selection, :line
   cmd.output = :insert_as_snippet
   #cmd.scope = :all
