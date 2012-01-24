@@ -1,1 +1,3 @@
 *.pyc
+cache*.yml
+.DS_Store
