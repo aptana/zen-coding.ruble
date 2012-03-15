@@ -11,13 +11,13 @@ command t(:expand_abbreviation) do |cmd|
       result = run_python('expand_abbreviation.py')
 
       if Ruble.is_windows? && $?.exitstatus == 1
-        context.exit_show_tooltip "Unable to find 'python' executable. Please be sure it is installed and on the PATH"
+        context.exit_show_tooltip t(:unable_to_find_python)
       else
         context.exit_discard if (result.nil? or result.strip.length == 0)
         result
       end
     rescue Errno::EPIPE
-      context.exit_show_tooltip "Unable to find 'python' executable. Please be sure it is installed and on the PATH"
+      context.exit_show_tooltip t(:unable_to_find_python)
     rescue => e
       context.exit_show_tooltip e.to_s
     end

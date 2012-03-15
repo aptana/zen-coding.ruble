@@ -1,4 +1,5 @@
 en:
   bundle_name: "Zen Coding"
+  bundle_description: "Port of Zen Coding for Studio 3"
   expand_abbreviation: 'Expand Abbreviation'
-  
+  unable_to_find_python: "Unable to find 'python' executable. Please be sure it is installed and on the PATH"
