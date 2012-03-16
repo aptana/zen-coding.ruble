@@ -14,7 +14,11 @@ zen_settings = {
 		'profile': 'xhtml',
 		
 #		Inner element indentation
-		'indentation': '\t'
+		'indentation': '\t',
+		
+		# newline variables, useful for wrapping
+		'newline': '\n',
+		'nl': '\n'
 	},
 	
 	# common settings are used for quick injection of user-defined snippets
@@ -24,6 +28,7 @@ zen_settings = {
 	
 	'css': {
 		'extends': 'common',
+		'filters': 'html,css',
 		'snippets': {
 			"@i": "@import url(|);",
 			"@m": "@media print {\n\t|\n}",
@@ -252,7 +257,7 @@ zen_settings = {
 			"bg": "background:|;",
 			"bg+": "background:#FFF url(|) 0 0 no-repeat;",
 			"bg:n": "background:none;",
-			"bg:ie": "filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='|x.png');",
+			"bg:ie": "filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='${1:x}.png',sizingMethod='${2:crop}');",
 			"bgc": "background-color:#FFF;",
 			"bgi": "background-image:url(|);",
 			"bgi:n": "background-image:none;",
@@ -694,6 +699,11 @@ zen_settings = {
 			'block_level': 'address,applet,blockquote,button,center,dd,del,dir,div,dl,dt,fieldset,form,frameset,hr,iframe,ins,isindex,li,link,map,menu,noframes,noscript,object,ol,p,pre,script,table,tbody,td,tfoot,th,thead,tr,ul,h1,h2,h3,h4,h5,h6',
 			'inline_level': 'a,abbr,acronym,applet,b,basefont,bdo,big,br,button,cite,code,del,dfn,em,font,i,iframe,img,input,ins,kbd,label,map,object,q,s,samp,script,select,small,span,strike,strong,sub,sup,textarea,tt,u,var'
 		}
+	},
+	
+	'xml': {
+		'extends': 'html',
+		'filters': 'html'
 	},
 	
 	'xsl': {

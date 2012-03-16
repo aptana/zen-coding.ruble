@@ -11,7 +11,8 @@ input to “Entire Document”
 '''
 import os
 import sys
-import zencoding.zen_core as zen
+import zencoding
+import zencoding.utils as zen
 import subprocess
 import re
 
@@ -24,29 +25,43 @@ class ZenEditor():
 		zen.set_newline(os.getenv('TM_LINE_ENDING', zen.get_newline()))		
 		self.set_context(context)
 
-	def _get_selected_text(self):
-		"Returns selected text"
-		return os.getenv('TM_SELECTED_TEXT', '')
-	
 	def set_context(self, context=None):
 		"""
 		Setup underlying editor context. You should call this method 
 		<code>before</code> using any Zen Coding action.
 		@param context: context object
 		"""
-		self._content = sys.stdin.read()
+		self._content = sys.stdin.read().decode('utf-8')
+		
+		# setup variables 
+		for k, v in os.environ.items():
+			m = re.match(r'^zc_var_(.+)', k.lower())
+			if m:
+				zen.set_variable(m.group(1), v)
+				
+	def _get_head_len(self, line_num):
+		head_lines = self.get_content().splitlines(True)[0:line_num - 1]
+		return len(u''.join(head_lines))
+	
+	def _get_current_line_num(self):
+		return int(os.getenv('TM_INPUT_START_LINE', os.getenv('TM_LINE_NUMBER', 1)))
 		
 	def get_selection_range(self):
 		"""
 		Returns character indexes of selected text
 		@return: list of start and end indexes
 		"""
-		line_num = int(os.getenv('TM_INPUT_START_LINE', os.getenv('TM_LINE_NUMBER', 1)))
-		head_lines = self.get_content().splitlines(True)[0:line_num - 1]
-		head_len = len(''.join(head_lines))
-		start, end = self.get_current_line_range()
+		head_len = self._get_head_len(self._get_current_line_num())
+		cur_pos = int(os.getenv('TM_INPUT_START_COLUMN', os.getenv('TM_COLUMN_NUMBER', 1))) - 1
 		
-		return start + head_len, end + head_len
+		# we need to expand tabbed indentation in order to correctly 
+		# calculate precise caret position
+		m = re.match(r'\t+', self.get_current_line())
+		if m:
+			tab_size = int(os.getenv('TM_TAB_SIZE', 1))
+			cur_pos -= len(m.group(0)) * (tab_size - 1)
+		
+		return head_len + cur_pos, head_len + cur_pos + len(self.get_selection())
 	
 	
 	def create_selection(self, start, end=None):
@@ -57,7 +72,7 @@ class ZenEditor():
 		"""
 		self.set_caret_pos(start)
 		if end is not None:
-			selected_text = self.get_content()[start:end]
+			selected_text = self.get_content()[start:end].encode('utf-8')
 			# copy selected text to Mac OS' pasteboard to use it 
 			# as a part of macros sequence for 'find next' action
 			subprocess.Popen(['pbcopy', '-pboard', 'find'], stdin=subprocess.PIPE).communicate(selected_text)
@@ -70,8 +85,8 @@ class ZenEditor():
 		start, end = zen_editor.get_current_line_range();
 		print('%s, %s' % (start, end))
 		"""
-		start = int(os.getenv('TM_INPUT_START_LINE_INDEX', os.getenv('TM_LINE_INDEX', 0)))
-		return start, start + len(self._get_selected_text())
+		start = self._get_head_len(self._get_current_line_num())
+		return start, start + len(self.get_current_line())
 	
 	def get_caret_pos(self):
 		""" Returns current caret position """
@@ -94,9 +109,9 @@ class ZenEditor():
 		Returns content of current line
 		@return: str
 		"""
-		return os.getenv('TM_CURRENT_LINE', '')
+		return os.getenv('TM_CURRENT_LINE', '').decode('utf-8')
 	
-	def replace_content(self, value, start=None, end=None):
+	def replace_content(self, value, start=None, end=None, no_indent=False):
 		"""
 		Replace editor's content or it's part (from <code>start</code> to 
 		<code>end</code> index). If <code>value</code> contains 
@@ -126,7 +141,7 @@ class ZenEditor():
 		if end is None: end = len(self.get_content())
 		self.create_selection(start, end)
 		
-		value = self.add_placeholders(value)
+		value = self.add_placeholders(value).encode('utf-8')
 		
 		fp = open(self.apple_script, 'w')
 		fp.write('tell application "TextMate" to insert "%s" with as snippet' % (value.replace('\\', '\\\\').replace('"', '\\"'),))
@@ -165,7 +180,7 @@ class ZenEditor():
 		Returns current output profile name (@see zen_coding#setup_profile)
 		@return {String}
 		"""
-		return 'xhtml'
+		return os.getenv('ZC_PROFILE', 'xhtml')
 	
 	def run_applescript(self):
 		"""
@@ -190,21 +205,19 @@ class ZenEditor():
 		if output[0] == '2' or not output[1]:
 			return None
 		else:
-			return output[1]
+			return output[1].decode('utf-8')
 		
 	def add_placeholders(self, text):
-		_ix = [zen.max_tabstop]
+		_ix = [1000]
 		
 		def get_ix(m):
 			_ix[0] += 1
-			return '$%s' % _ix[0]
+			return '${%s}' % _ix[0]
 		
-		text = re.sub(r'\$(?![\d\{])', '\\$', text)
 		return re.sub(zen.get_caret_placeholder(), get_ix, text)
 	
 	def get_selection(self):
-		start, end = self.get_selection_range()
-		return self.get_content()[start:end] if start != end else ''
+		return os.getenv('TM_SELECTED_TEXT', '').decode('utf-8')
 	
 	def get_file_path(self):
 		"""
@@ -212,4 +225,4 @@ class ZenEditor():
 		@return: str
 		@since: 0.65 
 		"""
-		return os.getenv('TM_FILEPATH', None)
+		return os.getenv('TM_FILEPATH', '').decode('utf-8')
